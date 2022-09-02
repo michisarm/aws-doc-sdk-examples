@@ -26,11 +26,7 @@ package com.example.kinesis;
 import reactor.core.publisher.Flux;
 import software.amazon.awssdk.core.async.SdkPublisher;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
-import software.amazon.awssdk.services.kinesis.model.ShardIteratorType;
-import software.amazon.awssdk.services.kinesis.model.StartingPosition;
-import software.amazon.awssdk.services.kinesis.model.SubscribeToShardEvent;
-import software.amazon.awssdk.services.kinesis.model.SubscribeToShardRequest;
-import software.amazon.awssdk.services.kinesis.model.SubscribeToShardResponseHandler;
+import software.amazon.awssdk.services.kinesis.model.*;
 
 import java.util.concurrent.CompletableFuture;
 // snippet-end:[kinesis.java2.stream_reactor_example.import]
@@ -42,7 +38,9 @@ import java.util.concurrent.CompletableFuture;
 // snippet-start:[kinesis.java2.stream_reactor_example.main]
 public class KinesisStreamReactorEx {
 
-    private static final String CONSUMER_ARN =  "arn:aws:kinesis:us-east-1:1234567890:stream/stream-name/consumer/consumer-name:1234567890";
+    // private static final String CONSUMER_ARN =  "arn:aws:kinesis:us-east-1:1234567890:stream/stream-name/consumer/consumer-name:1234567890";
+    private static final String CONSUMER_ARN = "arn:aws:kinesis:ap-northeast-2:852964532494:stream/ingest-prod-iot-senko-air-paju/consumer/KinesisIotSenkoPajuConsumerApplication:1651629472";
+    // private static final String CONSUMER_ARN =  "arn:aws:kinesis:ap-northeast-2:852964532494:stream/ingest-dev-iot-capstec/consumer/KinesisConsumerApplication:1651591059";
 
     /**
      * Uses Reactor via the onEventStream lifecycle method. This gives you full access to the publisher, which can be used
@@ -58,7 +56,14 @@ public class KinesisStreamReactorEx {
                                     .flatMapIterable(SubscribeToShardEvent::records)
                                     .limitRate(1000)
                                     .buffer(25)
-                                    .subscribe(e -> System.out.println("Record batch = " + e)))
+                                    .subscribe(records -> {
+                                        System.out.println("Record batch = " + records);
+                                        if(!records.isEmpty()){
+                                            for (Record record:records) {
+                                                System.out.println("data : "+ record.data().asUtf8String());
+                                            }
+                                        }
+                                    }))
             .build();
         return client.subscribeToShard(request, responseHandler);
 

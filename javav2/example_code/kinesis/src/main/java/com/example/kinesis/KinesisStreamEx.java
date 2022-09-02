@@ -43,19 +43,22 @@ public class KinesisStreamEx {
      */
 
     // Update to include a value CONSUMER_ARN - replace the following value
-    private static final String CONSUMER_ARN = "arn:aws:kinesis:us-east-1:111122223333:stream/StockTradeStream/consumer/StockApp:111122223333";
+    // private static final String CONSUMER_ARN = "arn:aws:kinesis:us-east-1:111122223333:stream/StockTradeStream/consumer/StockApp:111122223333";
+    // private static final String CONSUMER_ARN = "arn:aws:kinesis:ap-northeast-2:852964532494:stream/ingest-dev-iot-capstec";
+    private static final String CONSUMER_ARN = "arn:aws:kinesis:ap-northeast-2:852964532494:stream/ingest-prod-iot-senko-air-paju/consumer/KinesisIotSenkoPajuConsumerApplication:1651587594";
 
     public static void main(String[] args) {
 
         // snippet-start:[kinesis.java2.stream_example.setup]
-        Region region = Region.US_EAST_1;
+        Region region = Region.AP_NORTHEAST_2;
         KinesisAsyncClient client = KinesisAsyncClient.builder()
         .region(region)
         .build();
 
         SubscribeToShardRequest request = SubscribeToShardRequest.builder()
                 .consumerARN(CONSUMER_ARN)
-                .shardId("arn:aws:kinesis:us-east-1:111122223333:stream/StockTradeStream")
+                // .shardId("arn:aws:kinesis:us-east-1:111122223333:stream/StockTradeStream")
+                .shardId("shardId-000000000000")
                 .startingPosition(s -> s.type(ShardIteratorType.LATEST)).build();
 
         // snippet-end:[kinesis.java2.stream_example.setup]
